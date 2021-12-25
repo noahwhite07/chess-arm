@@ -28,6 +28,7 @@ import board_state
 # 13. Robot makes a jacking-off motion towards the player as a taunt
 # 14. ???
 # 15. Profit
+#added comment to test git shit
 
 boardImg = cv.imread('pictures/game.jpg')
 gameBoard = board(boardImg)
