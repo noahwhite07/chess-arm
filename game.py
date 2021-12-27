@@ -29,11 +29,11 @@ from board_state import boardState
 # 14. ???
 # 15. Profit
 
-boardImg = cv.imread('pictures/game.jpg')
+boardImg = cv.imread('pictures/game_2.jpg')
 gameBoard = board(boardImg)
 
-prevImg = cv.imread('pictures/game3.jpg')
-currentImg = cv.imread('pictures/game4.jpg')
+prevImg = cv.imread('pictures/game_3.jpg')
+currentImg = cv.imread('pictures/game_4.jpg')
 
 prevState = boardState(gameBoard, prevImg)
 currentState = boardState(gameBoard, currentImg)
@@ -48,5 +48,7 @@ def generateMove(prevState, currentState):
     currentSquares = currentState.getOccupiedSquares()
     
     print(prevSquares)
+    print(currentSquares)
+
 
 generateMove(prevState, currentState)

@@ -1,64 +1,10 @@
 import cv2 as cv
 import numpy as np
-import computer_vision
-
-class board:
-    def __init__(self, boardImage):
-        self.boardImg = boardImage
-        self.squarePositions = self.getSquarePositions()
-        
-    def getSquarePositions(self):
-        print("getSquarePositions ran here")
-        #corners = self.getBlobPoints(6)
-        corners = computer_vision.getBlobPoints(self.boardImg, 6)
-        print(corners)
 
 
-        # For two arbitrary points in corners, if abs(x1-x2) > threshold for difference
-        #   then larger of the two is the right bound, smaller is the left bound
-        # Repeat for y vals
-        threshold = 50
-
-        for i in range(len(corners) - 1):
-            x1 = corners[i][0]
-            x2 = corners[i + 1][0]
-            print(f'x1: {x1}\tx2: {x2}')
-
-            y1 = corners[i][1]
-            y2 = corners[i + 1][1]
-            print(f'y1: {y1}\ty2: {y2}')
-
-            if abs(x1 - x2) > threshold:
-                if x1 > x2:
-                    rightBound = x1
-                    leftBound = x2
-                else:
-                    rightBound = x2
-                    leftBound = x1
-
-            if abs(y1 - y2) > threshold:
-                if y1 > y2:
-                    lowerBound = y1
-                    upperBound = y2
-                else:
-                    lowerBound = y2
-                    upperBound = y1   
-        # Lists to hold the x coordinates of the vertical lines on the board
-        # and the y coordinates of the horizontal lines on the board respectiveley
-        vertXVals = []
-        horiYVals = []
-
-        # The side length of one square on the board
-        squareLength = (rightBound - leftBound) // 8
-
-        for i in range(9):
-            vertXVals.append(leftBound + (squareLength * i))
-            horiYVals.append(upperBound + (squareLength * i))
-                
-        return [vertXVals, horiYVals]
-
-    def getBlobPoints(self, color):
-        boardHSV = cv.cvtColor(self.boardImg, cv.COLOR_BGR2HSV)
+# A helper file made specifically to handle computer vision relation functions 
+def getBlobPoints(boardImg, color):
+        boardHSV = cv.cvtColor(boardImg, cv.COLOR_BGR2HSV)
 
         # HSV color bounds for green blobs
         green_lower = np.array([40, 40,40])
@@ -111,7 +57,7 @@ class board:
         # Creates a masked image of the board that only contains the blobs of each color
         #   and appends the image to maskedImages
         for colorMask in colorMasks:
-            maskedImages.append(cv.bitwise_and(self.boardImg, self.boardImg, mask = colorMask))
+            maskedImages.append(cv.bitwise_and(boardImg, boardImg, mask = colorMask))
 
         # A list to hold the thresholded image of the blobs of each color
         blobImages = []
@@ -171,7 +117,7 @@ class board:
         boardsWithKeypoints = []
 
         for keyPoints in keyPointsList:
-            boardsWithKeypoints.append(cv.drawKeypoints(self.boardImg, keyPoints, np.array([]), (0,0,0), cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS))
+            boardsWithKeypoints.append(cv.drawKeypoints(boardImg, keyPoints, np.array([]), (0,0,0), cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS))
             points = []
 
         for keyPoint in keyPointsList[color]:  
@@ -181,45 +127,3 @@ class board:
             points.append(point)
 
         return points
-
-
-    def getSquare(self, point):
-
-        #stores the x values of each vertical line in ascending order
-        vertXVals = self.squarePositions[0] 
-        #print(f'vertXVals = {vertXVals}')
-
-        #stores the y values of each horizontal line in ascending order
-        horiYVals = self.squarePositions[1]
-
-        #print(f'horiYVals: {horiYVals}')
-        #image origin is at top left, but chessboard origin is at bottom left
-        vertLabels = ['8','7','6','5','4','3','2','1']
-        horiLabels = ['a','b','c','d','e','f','g','h']
-
-        # Sets the default label to X so that if the point does not lie on a square, its label will be XX
-        pieceVertLabel = 'x'
-        for i, val in enumerate(horiYVals):
-            if (point[1] >= horiYVals[i] and point[1] < horiYVals[i+1]) :
-                pieceVertLabel = vertLabels[i]
-            
-        
-        pieceHoriLabel = 'x'
-        for i, val in enumerate(vertXVals):
-
-            if (point[0] >= vertXVals[i] and point[0] < vertXVals[i+1]) :
-                pieceHoriLabel = horiLabels[i]
-                #print(f'pieceHoriLabel: {pieceHoriLabel}')
-                #print(f'peiceVertLabel: {pieceVertLabel}')
-                        
-                    
-
-                        
-                square = pieceHoriLabel + pieceVertLabel
-                return square
-
-# boardImage = cv.imread('pictures/game.jpg')
-# board1 = board(boardImage)
-
-# square1 = board1.getSquare([200,200])
-# print(square1)

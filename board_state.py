@@ -3,11 +3,10 @@
 
 import cv2 as cv
 import numpy as np
-#import detect_blobs
-#import squares
 import matplotlib.pyplot as plt
 import random as rand
 from board import board
+import computer_vision
 
 
 class boardState:
@@ -18,7 +17,7 @@ class boardState:
     # board is the board object responsible for holding physical information about the layout of the board
     # boardImg is a video frame taken during the game to represent the current state of the game
     def __init__(self, board, boardImg):
-        self.boardImg = boardImg
+        self.boardImage = boardImg
         self.board = board
         pass
         
@@ -47,7 +46,9 @@ class boardState:
         for i, pieceColor in enumerate(pieceColors):
 
             # colorPoints holds the points in the image at which each pieceColor occurs
-            colorPoints = board.getBlobPoints(self.board, pieceColors[i])
+            #colorPoints = board.getBlobPoints(self.board, pieceColors[i])
+            colorPoints = computer_vision.getBlobPoints(self.boardImage, pieceColors[i])
+
 
             # A list to hold all the squares in which a pieceColor occurs
             colorSquares = []
