@@ -1,7 +1,7 @@
 import cv2 as cv
 import numpy as np
 from board import board 
-import board_state
+from board_state import boardState
 # This program should be responsible for handling the state and progression of the game
 # All calls to the engine itself should be made within this program 
 # 
@@ -28,11 +28,25 @@ import board_state
 # 13. Robot makes a jacking-off motion towards the player as a taunt
 # 14. ???
 # 15. Profit
-#added comment to test git shit
 
 boardImg = cv.imread('pictures/game.jpg')
 gameBoard = board(boardImg)
 
-square = gameBoard.getSquare([500,500])
-points = gameBoard.getBlobPoints(3)
-print(points)
+prevImg = cv.imread('pictures/game3.jpg')
+currentImg = cv.imread('pictures/game4.jpg')
+
+prevState = boardState(gameBoard, prevImg)
+currentState = boardState(gameBoard, currentImg)
+
+
+# Method generates a string representing the player's move (ex. e2e4) to feed into the engine
+# Takes in and compares two consequtive board states
+# Only works for single piece moves now, not castling or promotion
+
+def generateMove(prevState, currentState):
+    prevSquares = prevState.getOccupiedSquares()
+    currentSquares = currentState.getOccupiedSquares()
+    
+    print(prevSquares)
+
+generateMove(prevState, currentState)

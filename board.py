@@ -8,7 +8,7 @@ class board:
         self.squarePositions = self.getSquarePositions()
         
     def getSquarePositions(self):
-
+        print("getSquarePositions ran here")
         corners = self.getBlobPoints(6)
         print(corners)
 
@@ -194,7 +194,7 @@ class board:
         #print(f'horiYVals: {horiYVals}')
         #image origin is at top left, but chessboard origin is at bottom left
         vertLabels = ['8','7','6','5','4','3','2','1']
-        horiLabels = ['A','B','C','D','E','F','G','H']
+        horiLabels = ['a','b','c','d','e','f','g','h']
 
         # Sets the default label to X so that if the point does not lie on a square, its label will be XX
         pieceVertLabel = 'x'
