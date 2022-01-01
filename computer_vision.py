@@ -1,6 +1,8 @@
 import cv2 as cv
 import numpy as np
 
+#incredibly lazy global variable for testing
+keyPointsList = []
 
 # A helper file made specifically to handle computer vision relation functions 
 def getBlobPoints(boardImg, color):
@@ -34,6 +36,10 @@ def getBlobPoints(boardImg, color):
         red_lower = np.array([170,200,40])
         red_upper = np.array([180,255,255])
 
+        # HSV color bounds for white blobs
+        white_lower = np.array([0,0,200])
+        white_upper = np.array([255,20,255])
+
         # A 2D list to hold the pairs of color bounds for each of the 7 colors
         colorBounds = [
             [red_lower,red_upper],
@@ -42,7 +48,8 @@ def getBlobPoints(boardImg, color):
             [green_lower,green_upper],
             [cyan_lower, cyan_upper],
             [indigo_lower, indigo_upper],
-            [pink_lower,pink_upper]
+            [pink_lower,pink_upper],
+            [white_lower,white_upper]
             ]
 
         #A list to hold masks for each of the 7 colors in ROYGBIV format
@@ -104,7 +111,7 @@ def getBlobPoints(boardImg, color):
         ##############################################################
 
         # A list to hold the key points for each color given by detector.detect()
-        keyPointsList = []
+        # keyPointsList = []
         for blobImage in blobImages:
             keyPointsList.append(detector.detect(blobImage)) 
 
@@ -127,3 +134,12 @@ def getBlobPoints(boardImg, color):
             points.append(point)
 
         return points
+
+def drawBlobPoints(boardImg, color):
+    boardsWithKeypoints = []
+
+    for keyPoints in keyPointsList:
+        boardsWithKeypoints.append(cv.drawKeypoints(boardImg, keyPoints, np.array([]), (0,0,0), cv.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS))
+        points = []
+
+    cv.imshow(f'keypoints of color {color}',boardsWithKeypoints[color])
