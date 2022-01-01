@@ -2,6 +2,8 @@ import cv2 as cv
 import numpy as np
 from board import board 
 from board_state import boardState
+
+#import sunfish
 # This program should be responsible for handling the state and progression of the game
 # All calls to the engine itself should be made within this program 
 # 
@@ -32,8 +34,8 @@ from board_state import boardState
 boardImg = cv.imread('pictures/game_2.jpg')
 gameBoard = board(boardImg)
 
-prevImg = cv.imread('pictures/game_3.jpg')
-currentImg = cv.imread('pictures/game_4.jpg')
+prevImg = cv.imread('pictures/prev.jpg')
+currentImg = cv.imread('pictures/current.jpg')
 
 prevState = boardState(gameBoard, prevImg)
 currentState = boardState(gameBoard, currentImg)
@@ -41,14 +43,47 @@ currentState = boardState(gameBoard, currentImg)
 
 # Method generates a string representing the player's move (ex. e2e4) to feed into the engine
 # Takes in and compares two consequtive board states
-# Only works for single piece moves now, not castling or promotion
+
+# There are a few things we need to keep track of
+# Odd or even turn? Turns start at 1 so odd turns are always player turns
+# If even turn, robot moves, if odd turn, we need to interpret the player move
+# To interpret the player move we need to consider the following cases: 
+# 1. Single move/ capture
+# 2. Promotion: I think this is the same notation as a single move, the engine knows how to handle it
+# 3. Castling: did two white pieces move simultaneously? What direction did they move?
+# First just handle single moves, captures and promotions
+# It's not even explicitly necessary to track the black pieces.
+# If we assume the piece is in the center, and we know the locations of the squares,
+#  we can just go to the center of the square to move the black pieces
 
 def generateMove(prevState, currentState):
+    # These are the nested lists of occupied squares of each color
+    #  taken before and after a player move
     prevSquares = prevState.getOccupiedSquares()
     currentSquares = currentState.getOccupiedSquares()
-    
-    print(prevSquares)
-    print(currentSquares)
 
+    # We only need one color for all the white pieces now.
+    # For now, assume the white pieces are red, and fix the color mess later
+    whitePieceColor = 0
+
+    # for i, square in enumerate(prevSquares[whitePieceColor]):
+    #     print(f'prev: {square}\t current: {currentSquares[0][i]}')
+
+    # Converts the occupied squares for white pieces into a set to compare the lists and find the piece that moved
+    prevSet = set(prevSquares[whitePieceColor])
+    currSet = set(currentSquares[whitePieceColor])
+
+    # Does subtraction on the sets to find the square that changed in each list 
+    # Subtraction returns single-element sets, so convert them to lists and use their 0th element
+    initSquare = list(prevSet - currSet)
+    finalSquare = list(currSet - prevSet)
+
+    # Returns the string containing the move to feed the engine (ex. 'e2e4')
+    return (initSquare[0] + finalSquare[0])
+
+def send_move():
+    return 'e2e4'
+def recieve_move(botMove):
+    print(f'engine move: {botMove}')
 
 generateMove(prevState, currentState)
