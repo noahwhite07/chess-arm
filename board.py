@@ -192,17 +192,16 @@ class board:
         
         #stores the x values of each vertical line in ascending order
         vertXVals = self.squarePositions[0] 
-        #print(f'vertXVals = {vertXVals}')
 
         #stores the y values of each horizontal line in ascending order
         horiYVals = self.squarePositions[1]
 
-        #print(f'horiYVals: {horiYVals}
         #image origin is at top left, but chessboard origin is at bottom left
         vertLabels = ['8','7','6','5','4','3','2','1']
         horiLabels = ['a','b','c','d','e','f','g','h']
 
-        # Sets the default label to X so that if the point does not lie on a square, its label will be XX
+        # Sets the default label to X so that if the point does not lie on a square, its label will be 
+        # Does not work. If point is outside squares, this method returns a NoneType object
         pieceVertLabel = 'x'
         for i in range(len(horiYVals) - 1):
             if (point[1] >= horiYVals[i] and point[1] < horiYVals[i+1]) :
@@ -216,15 +215,7 @@ class board:
                 pieceHoriLabel = horiLabels[i]
                 #print(f'pieceHoriLabel: {pieceHoriLabel}')
                 #print(f'peiceVertLabel: {pieceVertLabel}')
-                        
-                    
+                                         
+        square = pieceHoriLabel + pieceVertLabel
+        return square
 
-                        
-                square = pieceHoriLabel + pieceVertLabel
-                return square
-
-# boardImage = cv.imread('pictures/game.jpg')
-# board1 = board(boardImage)
-
-# square1 = board1.getSquare([200,200])
-# print(square1)
