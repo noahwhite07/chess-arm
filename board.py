@@ -10,7 +10,8 @@ class board:
     def getSquarePositions(self):
         print("getSquarePositions ran here")
         #corners = self.getBlobPoints(6)
-        corners = computer_vision.getBlobPoints(self.boardImg, 6)
+        cornerColor = 6
+        corners = computer_vision.getBlobPoints(self.boardImg, cornerColor)
         print(corners)
 
 
@@ -18,6 +19,8 @@ class board:
         #   then larger of the two is the right bound, smaller is the left bound
         # Repeat for y vals
         threshold = 50
+        if len(corners) != 4:
+            raise Exception(f'getSquarePositions expected 4 corners but detected {len(corners)}')
 
         for i in range(len(corners) - 1):
             x1 = corners[i][0]
@@ -184,7 +187,9 @@ class board:
 
 
     def getSquare(self, point):
-
+        if(len(point) < 2):
+            raise Exception('point is empty')
+        
         #stores the x values of each vertical line in ascending order
         vertXVals = self.squarePositions[0] 
         #print(f'vertXVals = {vertXVals}')
@@ -199,13 +204,13 @@ class board:
 
         # Sets the default label to X so that if the point does not lie on a square, its label will be XX
         pieceVertLabel = 'x'
-        for i, val in enumerate(horiYVals):
+        for i in range(len(horiYVals) - 1):
             if (point[1] >= horiYVals[i] and point[1] < horiYVals[i+1]) :
                 pieceVertLabel = vertLabels[i]
             
         
         pieceHoriLabel = 'x'
-        for i, val in enumerate(vertXVals):
+        for i in range(len(vertXVals) - 1):
 
             if (point[0] >= vertXVals[i] and point[0] < vertXVals[i+1]) :
                 pieceHoriLabel = horiLabels[i]

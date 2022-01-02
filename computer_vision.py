@@ -37,8 +37,8 @@ def getBlobPoints(boardImg, color):
         red_upper = np.array([180,255,255])
 
         # HSV color bounds for white blobs
-        white_lower = np.array([0,0,200])
-        white_upper = np.array([255,20,255])
+        white_lower = np.array([0,0,160])
+        white_upper = np.array([255,25,255])
 
         # A 2D list to hold the pairs of color bounds for each of the 7 colors
         colorBounds = [
