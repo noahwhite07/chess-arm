@@ -1,2 +1,5 @@
 cv_test.py
 gitignoretest.py
+detect_blobs.py
+generate_move.py
+board_test.py
