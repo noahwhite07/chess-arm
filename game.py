@@ -2,17 +2,8 @@ import cv2 as cv
 import numpy as np
 from board import board 
 from board_state import boardState
+import computer_vision
 
-#import sunfish
-# This program should be responsible for handling the state and progression of the game
-# All calls to the engine itself should be made within this program 
-# 
-# The frames taken from the webcam should be taken here and piped into the other scripts
-# For now, assume camera is totally stationary, generation of square coordinates should only be done once
-# 
-# Calls to whatever program handles movement of the arm should be called from here too
-#
-# Sequence should be as follows:
 
 # 1. Take initial frame upon startup (probably a button for startup)
 # 2. Get the coordinates for all the squares from the first image
@@ -31,18 +22,9 @@ from board_state import boardState
 # 14. ???
 # 15. Profit
 
-boardImg = cv.imread('pictures/game_2.jpg')
-gameBoard = board(boardImg)
-
-prevImg = cv.imread('pictures/prev.jpg')
-currentImg = cv.imread('pictures/current.jpg')
-
-prevState = boardState(gameBoard, prevImg)
-currentState = boardState(gameBoard, currentImg)
 
 
-# Method generates a string representing the player's move (ex. e2e4) to feed into the engine
-# Takes in and compares two consequtive board states
+
 
 # There are a few things we need to keep track of
 # Odd or even turn? Turns start at 1 so odd turns are always player turns
@@ -56,22 +38,30 @@ currentState = boardState(gameBoard, currentImg)
 # If we assume the piece is in the center, and we know the locations of the squares,
 #  we can just go to the center of the square to move the black pieces
 
+
+# This module contains the methods that are called by the engine to fetch the move made by the player
+#  and to send the engine move to the arm
+    
+
+# Method generates a string representing the player's move (ex. 'e2e4') to feed into the engine
+# Takes in and compares two consequtive board states
 def generateMove(prevState, currentState):
     # These are the nested lists of occupied squares of each color
     #  taken before and after a player move
+
+    # This method should take two frames from the video stream:
+    # one triggered by the robot finishing its move, and one triggered by the player hitting his clock
+
     prevSquares = prevState.getOccupiedSquares()
     currentSquares = currentState.getOccupiedSquares()
 
-    # We only need one color for all the white pieces now.
-    # For now, assume the white pieces are red, and fix the color mess later
     whitePieceColor = 0
 
-    # for i, square in enumerate(prevSquares[whitePieceColor]):
-    #     print(f'prev: {square}\t current: {currentSquares[0][i]}')
+
 
     # Converts the occupied squares for white pieces into a set to compare the lists and find the piece that moved
-    prevSet = set(prevSquares[whitePieceColor])
-    currSet = set(currentSquares[whitePieceColor])
+    prevSet = set(prevSquares)
+    currSet = set(currentSquares)
 
     # Does subtraction on the sets to find the square that changed in each list 
     # Subtraction returns single-element sets, so convert them to lists and use their 0th element
@@ -82,8 +72,61 @@ def generateMove(prevState, currentState):
     return (initSquare[0] + finalSquare[0])
 
 def send_move():
-    return 'e2e4'
+    # A string to hold the player's move
+    playerMove = ''
+
+    # A list to store two frames taken before and after each player move
+    captures = []
+
+    # Begins capturing video from the camera
+    cameraIn = cv.VideoCapture(0, cv.CAP_DSHOW)
+
+    # Takes one frame from the video input to initialize the board object
+    ret, boardImg = cameraIn.read()
+
+    # Initializes a board object for the game
+    myBoard = board(boardImage = boardImg)
+
+    # Loop runs until two captures are taken from the video feed
+    while(True):
+    
+        ret, frame = cameraIn.read()
+    
+        # Display the video feed
+        cv.imshow('frame', frame)
+
+        # Displays the captures taken
+        for i, capture in enumerate(captures):
+            cv.imshow(f'capture {i}', capture)
+
+        # If the user inputs 'c', take a capture from the video feed
+        if cv.waitKey(10) & 0xFF == ord('c'):
+            print("captured")
+            ret, capture = cameraIn.read()
+            captures.append(capture)
+
+        # If the user inputs 'q', exit the program
+        if cv.waitKey(20) & 0xFF == ord('q'):
+            # After the loop release the cap object
+            cameraIn.release()
+            # Destroy all the windows
+            cv.destroyAllWindows()
+
+        # Once two captures are taken, calculate the move 
+        if len(captures) > 1:
+            # Initializes board states from the two captures
+            prevState = boardState(myBoard, captures[0])
+            currentState = boardState(myBoard, captures[1])
+
+            # Generates the move using the two boardStates and assigns it to move
+            playerMove = generateMove(prevState, currentState)
+            print(f'Move: {playerMove}')
+            break
+
+    # Returns a string reperesting the players move (ex. 'e2e4)
+    return playerMove
+
+# Eventually, the purpose of this method will be to call whatever program is responsible for moving the arm 
 def recieve_move(botMove):
     print(f'engine move: {botMove}')
 
-generateMove(prevState, currentState)
