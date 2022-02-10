@@ -18,17 +18,13 @@ import computer_vision
 # 10. Make the current state the previous state
 # 11. Arm hits clock (this might not be physical)
 # 12. Repeat steps 4-11 until robot inevitably wins 
-# 13. Robot makes a jacking-off motion towards the player as a taunt
-# 14. ???
-# 15. Profit
+# 13. ???
+# 14. Profit
 
 
 
 
 
-# There are a few things we need to keep track of
-# Odd or even turn? Turns start at 1 so odd turns are always player turns
-# If even turn, robot moves, if odd turn, we need to interpret the player move
 # To interpret the player move we need to consider the following cases: 
 # 1. Single move/ capture
 # 2. Promotion: I think this is the same notation as a single move, the engine knows how to handle it
